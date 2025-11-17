@@ -13,7 +13,7 @@ public record ModMetadata : AbstractModMetadata
     public override string Name { get; init; } = "Echoes Of Tarkov Requisitions";
     public override string Author { get; init; } = "Pluto";
     public override SemanticVersioning.Version Version { get; init; } = new("2.0.0");
-    public override Range SptVersion { get; init; } = new("4.0.4");
+    public override Range SptVersion { get; init; } = new("~4.0.0");
     public override string License { get; init; } = "MIT";
     public override bool? IsBundleMod { get; init; } = true;
     public override Dictionary<string, Range>? ModDependencies { get; init; } = new()
