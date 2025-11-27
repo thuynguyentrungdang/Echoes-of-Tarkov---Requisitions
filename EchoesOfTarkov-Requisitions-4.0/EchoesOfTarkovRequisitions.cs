@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using SPTarkov.DI.Annotations;
 using SPTarkov.Server.Core.DI;
 using SPTarkov.Server.Core.Models.Common;
@@ -110,6 +110,7 @@ public class EchoesOfTarkovRequisitions(
         
         // Use WTT-CommonLib services
         await wttCommon.CustomItemServiceExtended.CreateCustomItems(assembly);
+        await wttCommon.CustomLocaleService.CreateCustomLocales(assembly);
         
         AddToFilter();
         
