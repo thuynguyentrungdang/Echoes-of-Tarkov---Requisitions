@@ -25,7 +25,7 @@ public record ModMetadata : AbstractModMetadata
     };
     public override string? Url { get; init; }
     public override List<string>? Contributors { get; init; }
-    public override List<string>? Incompatibilities { get; init; }
+    public override List<string>? Incompatibilities { get; init; } = ["ca.bushtail.cantedaiming"];
 }
 
 [Injectable(TypePriority = OnLoadOrder.PostDBModLoader + 2)]

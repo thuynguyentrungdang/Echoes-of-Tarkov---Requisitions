@@ -5,6 +5,11 @@
         <RootNamespace>EchoesOfTarkov_Requisitions_4._0</RootNamespace>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <OutputType>Library</OutputType>
+
+        <!-- Custom output path -->
+        <OutputPath>bin\$(Configuration)\$(ProjectName)\$(AssemblyName)\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,5 +17,100 @@
       <PackageReference Include="SPTarkov.Server.Core" Version="4.0.3" />
       <PackageReference Include="WTT-ServerCommonLib" Version="2.0.2" />
     </ItemGroup>
+
+    <PropertyGroup>
+        <SPTPath>F:\SPT_4.0\SPT</SPTPath>
+    </PropertyGroup>
+
+    <Target Name="ForceBuild" BeforeTargets="CoreCompile" Inputs="" Outputs="" />
+
+    <Target Name="DebugCopy" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
+
+        <!-- Destination for debug builds -->
+        <PropertyGroup>
+            <DebugStaging>$(SPTPath)\user\mods\$(ProjectName)</DebugStaging>
+        </PropertyGroup>
+
+        <MakeDir Directories="$(DebugStaging)" />
+
+        <ItemGroup>
+            <!-- Copy all DLLs produced by the build -->
+            <DebugDlls Include="$(OutputPath)*.dll" />
+
+            <!-- Include database folder recursively -->
+            <DatabaseFiles Include="$(OutputPath)db\**\*.*" />
+            
+            <!-- Include bundles folder recursively -->
+            <BundlesFiles Include="$(OutputPath)bundles\**\*.*" />
+        </ItemGroup>
+
+        <Message Importance="high" Text="Debug build detected. Copying files to $(DebugStaging)" />
+
+        <Copy
+                SourceFiles="@(DebugDlls)"
+                DestinationFolder="$(DebugStaging)"
+                SkipUnchangedFiles="false"
+                ContinueOnError="false" />
+
+        <Copy
+                SourceFiles="@(DatabaseFiles)"
+                DestinationFiles="@(DatabaseFiles->'$(DebugStaging)\db\%(RecursiveDir)%(Filename)%(Extension)')"
+                SkipUnchangedFiles="false"
+                ContinueOnError="false" />
+
+        <Copy
+                SourceFiles="@(BundlesFiles)"
+                DestinationFiles="@(BundlesFiles->'$(DebugStaging)\bundles\%(RecursiveDir)%(Filename)%(Extension)')"
+                SkipUnchangedFiles="false"
+                ContinueOnError="false" />
+
+    </Target>
+
+    <!-- Copy output to staging directory -->
+    <Target Name="StagingForge" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">
+
+        <PropertyGroup>
+            <StagingDir>D:\Staging Area\$(ProjectName)\SPT\user\mods\$(ProjectName)</StagingDir>
+        </PropertyGroup>
+
+        <!-- Ensure directory exists -->
+        <MakeDir Directories="$(StagingDir)" />
+
+        <ItemGroup>
+            <!-- Copy all DLLs produced by the build -->
+            <DllFiles Include="$(OutputPath)*.dll" />
+
+            <!-- Include database folder recursively -->
+            <DatabaseFiles Include="$(OutputPath)db\**\*.*" />
+
+            <!-- Include bundles folder recursively -->
+            <BundlesFiles Include="$(OutputPath)bundles\**\*.*" />
+        </ItemGroup>
+
+        <Message Importance="high" Text="Copying mod files to staging: $(StagingDir)" />
+
+        <!-- Copy DLLs -->
+        <Copy
+                SourceFiles="@(DllFiles)"
+                DestinationFolder="$(StagingDir)"
+                SkipUnchangedFiles="true"
+                ContinueOnError="false" />
+
+        <!-- Copy database folder, preserving directory structure -->
+        <Copy
+                SourceFiles="@(DatabaseFiles)"
+                DestinationFiles="@(DatabaseFiles->'$(StagingDir)\db\%(RecursiveDir)%(Filename)%(Extension)')"
+                SkipUnchangedFiles="true"
+                ContinueOnError="false" />
+
+        <Copy
+                SourceFiles="@(BundlesFiles)"
+                DestinationFiles="@(BundlesFiles->'$(StagingDir)\bundles\%(RecursiveDir)%(Filename)%(Extension)')"
+                SkipUnchangedFiles="false"
+                ContinueOnError="false" />
+
+        <Message Importance="high" Text="Staging complete." />
+
+    </Target>
 
 </Project>
